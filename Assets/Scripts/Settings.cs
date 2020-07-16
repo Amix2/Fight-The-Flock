@@ -8,6 +8,7 @@ public class Settings : MonoBehaviour
     public float cohesionForceStrength;
     public float alignmentForceStrength;
     public float avoidanceForceStrength;
+    public float maxBoidSpeed;
 
 
     public static Settings Instance { get; private set; }
