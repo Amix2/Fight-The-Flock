@@ -330,6 +330,7 @@ MonoBehaviour:
   alignmentForceStrength: 0
   avoidanceForceStrength: 0
   maxBoidSpeed: 5
+  minBoidSpeed: 3
 --- !u!4 &1227370644
 Transform:
   m_ObjectHideFlags: 0
@@ -489,7 +490,7 @@ MonoBehaviour:
     x: 10
     y: 5
     z: 2
-  SpawnNumber: 10
+  SpawnNumber: 1
 --- !u!4 &2088380777
 Transform:
   m_ObjectHideFlags: 0

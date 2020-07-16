@@ -9,6 +9,7 @@ public class Settings : MonoBehaviour
     public float alignmentForceStrength;
     public float avoidanceForceStrength;
     public float maxBoidSpeed;
+    public float minBoidSpeed;
 
 
     public static Settings Instance { get; private set; }

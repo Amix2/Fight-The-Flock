@@ -7,11 +7,11 @@ public static class Utils
 {
     public static float3 SteerTowards(float3 velocity, float3 targetOffset)
     {
-        float3 normTargetOffset = math.normalize(targetOffset);
+        float3 normTargetOffset = math.normalizesafe(targetOffset);
         float sqrDistToTarget = math.lengthsq(targetOffset);
         float distMul = sqrDistToTarget > 1f ? 1f : sqrDistToTarget;
 
-        if (math.lengthsq(velocity) == 0) return normTargetOffset * distMul;
+        if (math.lengthsq(velocity) == 0) return normTargetOffset;
 
         float3 normVelocity = math.normalize(velocity);
         float cosAng = math.dot(normVelocity, normTargetOffset);
