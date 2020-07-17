@@ -36,7 +36,6 @@ public class SpawnBoidsSystem : JobComponentSystem
             var ecb = beginSimulationEntityCBS.CreateCommandBuffer().ToConcurrent();
             inputDeps = Entities.WithoutBurst().ForEach((int entityInQueryIndex, ref BoidSpawnerComponent prefabComponent) =>
             {
-                Debug.Log("prefabComponent.Entity " + prefabComponent.Entity);
                 float3 spawnOffset = prefabComponent.Offsets;
                 for (int i = 0; i < prefabComponent.SpawnNumber; i++)
                 {

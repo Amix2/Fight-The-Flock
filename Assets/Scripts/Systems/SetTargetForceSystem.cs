@@ -9,7 +9,7 @@ public class SetTargetForceSystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
 
-        float3 center = new float3(1f, 1f, 0f);
+        float3 center = new float3(0f, 0f, 0f);
         float forceStrenght = Settings.Instance.targetForceStrength;
         return Entities.ForEach((ref ForceComponent force, in Translation translation, in PhysicsVelocity velocity) =>
         {

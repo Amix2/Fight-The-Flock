@@ -10,6 +10,9 @@ public class Settings : MonoBehaviour
     public float avoidanceForceStrength;
     public float maxBoidSpeed;
     public float minBoidSpeed;
+    public float maxBoidObstacleAvoidance;
+    public float minBoidObstacleDist;
+    public float boidObstacleProximityPush;
 
 
     public static Settings Instance { get; private set; }

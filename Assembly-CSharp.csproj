@@ -76,12 +76,14 @@
     <Compile Include="Assets\Scripts\Octree\OctreeCreator.cs" />
     <Compile Include="Assets\Scripts\Octree\Systems\MoveTreeItemsSystem.cs" />
     <Compile Include="Assets\Scripts\Settings.cs" />
+    <Compile Include="Assets\Scripts\Systems\ObstacleAvoidanceSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\PushByForceSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\RotateUpSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\SetTargetForceSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\SpawnBoidsSystem.cs" />
     <Compile Include="Assets\Scripts\Tests\SteerTowardsTest.cs" />
     <Compile Include="Assets\Scripts\Utils\GizmosDrawer.cs" />
+    <Compile Include="Assets\Scripts\Utils\PhysicUtils.cs" />
     <Compile Include="Assets\Scripts\Utils\Utils.cs" />
     <Reference Include="UnityEngine">
       <HintPath>F:/Unity/Editor/2019.4.3f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

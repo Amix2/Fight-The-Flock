@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
-using UnityEngine;
 
 public static class Utils
 {
@@ -38,5 +37,40 @@ public static class Utils
             t*vy+b,
             t*vz+c
             );
+    }
+
+    /// <summary>
+    /// Yield all points on a sphere with radius = 1
+    /// </summary>
+    /// <param name="numPoints">Number of points to generate</param>
+    /// <returns></returns>
+    public static IEnumerable<float3> GetPoinsOnSphere(int numPoints)
+    {
+        float goldenRatio = (1 + math.sqrt(5)) * 0.5f;
+        float angleIncrement = math.PI * 2 * goldenRatio;
+
+        for (int i = 0; i < numPoints; i++)
+        {
+            float t = (float)i / numPoints;
+            float inclination = math.acos(1 - 2 * t);
+            float azimuth = angleIncrement * i;
+
+            float x = math.sin(inclination) * math.cos(azimuth);
+            float y = math.sin(inclination) * math.sin(azimuth);
+            float z = math.cos(inclination);
+            yield return new float3(x, y, z);
+        }
+    }
+
+    /// <summary>
+    /// Kernel function (1-x^{0}) ^ {1}
+    /// </summary>
+    /// <param name="x">Should be in range [0,1]</param>
+    /// <param name="steepness">{0}</param>
+    /// <param name="delayGrowth">{1}</param>
+    /// <returns>Value [0,1]</returns>
+    public static float KernelFunction(float x, int steepness = 2, int delayGrowth = 3)
+    {
+        return math.pow(1 - math.pow(x, steepness), delayGrowth);
     }
 }
