@@ -13,6 +13,7 @@ public class Settings : MonoBehaviour
     public float maxBoidObstacleAvoidance;
     public float minBoidObstacleDist;
     public float boidObstacleProximityPush;
+    public uint boidObstacleMask;
 
 
     public static Settings Instance { get; private set; }

@@ -33,16 +33,17 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
         float minBoidObstacleDist = Settings.Instance.minBoidObstacleDist;
         float forceStrenght = Settings.Instance.avoidanceForceStrength;
         float boidObstacleProximityPush = Settings.Instance.boidObstacleProximityPush;
+        uint mask =  Settings.Instance.boidObstacleMask;
         BuildPhysicsWorld physicsWorldSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<BuildPhysicsWorld>();
         CollisionWorld collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
 
+
         return Entities.WithAny<BoidComponent>().ForEach((ref ForceComponent forceComponent, in Translation translation, in LocalToWorld localToWorld) =>
             {
-                float3 front = localToWorld.Up * 3f;
                 float3 force = default;
                 for (int i = 0; i < numOfDirections; i++)
                 {
-                    bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, collisionWorld
+                    bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, mask, collisionWorld
                         , out RaycastHit raycastHit);
                     if (hit)
                     {
@@ -57,7 +58,7 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
                             push = boidObstacleProximityPush * Utils.KernelFunction((hitDistance) / (minBoidObstacleDist)) + 1;
                         }
                         force += push * -sphereDirections[i];
-                    }
+                    } 
                 }
                 force = Utils.SteerTowards(localToWorld.Up, force / numOfDirections * forceStrenght);
                 forceComponent.Force += force;
