@@ -1,7 +1,4 @@
 ﻿using Octrees;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Policy;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -18,7 +15,7 @@ public class SpaceTree : MonoBehaviour
     public int boidTreeItemSize;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         BoidTreeID = OctreeCreator.CreateTree<Entity>(boidTreeCenter, boidTreeSize, boidTreeItemSize);
     }
@@ -28,4 +25,8 @@ public class SpaceTree : MonoBehaviour
         OctreeCreator.Dispose();
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        BoidTree.Draw();
+    }
 }

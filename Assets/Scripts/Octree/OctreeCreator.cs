@@ -66,6 +66,26 @@ namespace Octrees
             IdentityComponents.IdentityComponents.SetIdentityComponent(treeID, entity, entityManager);
         }
 
+        /// <summary>
+        /// Add item to given tree, inserts item into item-id map
+        /// </summary>
+        /// <typeparam name="T">Item type</typeparam>
+        /// <param name="treeID">Tree id</param>
+        /// <param name="item">item</param>
+        /// <param name="position">items's position</param>
+        /// <param name="entity">Entity which generaes position update</param>
+        public static void AddItem<T>(ushort treeID, T item, float3 position, Entity entity, EntityCommandBuffer.Concurrent commandBuffer) where T : struct, IEquatable<T>
+        {
+            Octree tree = octrees[treeID];
+            ushort itemID = tree.AddItem(position);
+            OctreeIdMap<T> map = (OctreeIdMap<T>)octreeMaps[treeID];
+            map.map.Add(itemID, item);
+
+            commandBuffer.AddComponent(treeID, entity, new OctreeMovePositionComponent { Value = position });
+            commandBuffer.AddComponent(treeID, entity, new OctreeIdComponent { itemID = itemID });
+            IdentityComponents.IdentityComponents.SetIdentityComponent(treeID, entity, commandBuffer);
+        }
+
         public static void PremakeDepth(ushort treeID, int depth)
         {
             Octree tree = octrees[treeID];

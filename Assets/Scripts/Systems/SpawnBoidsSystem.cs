@@ -1,6 +1,4 @@
 ﻿using Octrees;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -11,7 +9,7 @@ using Random = Unity.Mathematics.Random;
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public class SpawnBoidsSystem : JobComponentSystem
 {
-    BeginSimulationEntityCommandBufferSystem beginSimulationEntityCBS;
+    private BeginSimulationEntityCommandBufferSystem beginSimulationEntityCBS;
     private Random random;
 
     protected override void OnCreate()
@@ -32,8 +30,8 @@ public class SpawnBoidsSystem : JobComponentSystem
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Random random = new Random((uint)(Time.ElapsedTime*100000));
-            var ecb = beginSimulationEntityCBS.CreateCommandBuffer().ToConcurrent();
+            Random random = new Random((uint)(Time.ElapsedTime * 100000));
+            EntityCommandBuffer.Concurrent ecb = beginSimulationEntityCBS.CreateCommandBuffer().ToConcurrent();
             inputDeps = Entities.WithoutBurst().ForEach((int entityInQueryIndex, ref BoidSpawnerComponent prefabComponent) =>
             {
                 float3 spawnOffset = prefabComponent.Offsets;
@@ -47,7 +45,7 @@ public class SpawnBoidsSystem : JobComponentSystem
                     Entity entity = ecb.Instantiate(entityInQueryIndex, prefabComponent.Entity);
                     float3 position = prefabComponent.Center + offset;
                     ecb.SetComponent(entityInQueryIndex, entity, new Translation { Value = position });
-                    //OctreeCreator.AddItem(SpaceTree.BoidTreeID, entity, position, entity, EntityManager);
+                    OctreeCreator.AddItem(SpaceTree.BoidTreeID, entity, position, entity, ecb);
                 }
             }).Schedule(inputDeps);
             beginSimulationEntityCBS.AddJobHandleForProducer(inputDeps);
@@ -59,7 +57,7 @@ public class SpawnBoidsSystem : JobComponentSystem
     {
         Entities.WithoutBurst().ForEach((ref BoidSpawnerComponent prefabComponent) =>
         {
-            Gizmos.DrawWireCube(prefabComponent.Center, 2*prefabComponent.Offsets);
+            Gizmos.DrawWireCube(prefabComponent.Center, 2 * prefabComponent.Offsets);
         }).Run();
     }
 }

@@ -1,8 +1,5 @@
-﻿
-using Unity.Entities;
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 using Unity.Physics;
-using Unity.Physics.Systems;
 
 public static class PhysicUtils
 {
@@ -21,7 +18,7 @@ public static class PhysicUtils
         {
             Filter = new CollisionFilter()
             {
-                CollidesWith = colliderMask, // all 1s, so all layers, collide with everything 
+                CollidesWith = colliderMask, // all 1s, so all layers, collide with everything
                 BelongsTo = colliderMask,
                 GroupIndex = 0
             },

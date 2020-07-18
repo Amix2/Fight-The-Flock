@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 
 public static class Utils
@@ -15,10 +14,9 @@ public static class Utils
         float3 normVelocity = math.normalize(velocity);
         float cosAng = math.dot(normVelocity, normTargetOffset);
 
-
         float3 directionProjection = ProjectionVectorOntoPlane(normVelocity, targetOffset);
 
-        return directionProjection  * (1-cosAng);
+        return directionProjection * (1 - cosAng);
     }
 
     /// <summary>
@@ -33,9 +31,9 @@ public static class Utils
         float vx = planeVector.x, vy = planeVector.y, vz = planeVector.z;
         float t = (-vx * a - vy * b - vz * c) / (vx * vx + vy * vy + vz * vz);
         return new float3(
-            t*vx+a,
-            t*vy+b,
-            t*vz+c
+            t * vx + a,
+            t * vy + b,
+            t * vz + c
             );
     }
 

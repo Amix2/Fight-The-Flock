@@ -5,7 +5,6 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
-using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 public class ObstacleAvoidanceSystem : JobComponentSystem
@@ -33,10 +32,9 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
         float minBoidObstacleDist = Settings.Instance.minBoidObstacleDist;
         float forceStrenght = Settings.Instance.avoidanceForceStrength;
         float boidObstacleProximityPush = Settings.Instance.boidObstacleProximityPush;
-        uint mask =  Settings.Instance.boidObstacleMask;
+        uint mask = Settings.Instance.boidObstacleMask;
         BuildPhysicsWorld physicsWorldSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<BuildPhysicsWorld>();
         CollisionWorld collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
-
 
         return Entities.WithAny<BoidComponent>().ForEach((ref ForceComponent forceComponent, in Translation translation, in LocalToWorld localToWorld) =>
             {
@@ -58,11 +56,10 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
                             push = boidObstacleProximityPush * Utils.KernelFunction((hitDistance) / (minBoidObstacleDist)) + 1;
                         }
                         force += push * -sphereDirections[i];
-                    } 
+                    }
                 }
                 force = Utils.SteerTowards(localToWorld.Up, force / numOfDirections * forceStrenght);
                 forceComponent.Force += force;
-
             }).Schedule(inputDeps);
     }
 

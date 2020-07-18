@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Settings : MonoBehaviour
 {
@@ -14,7 +12,6 @@ public class Settings : MonoBehaviour
     public float minBoidObstacleDist;
     public float boidObstacleProximityPush;
     public uint boidObstacleMask;
-
 
     public static Settings Instance { get; private set; }
 
