@@ -43,19 +43,7 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
                 float3 force = default;
                 for (int i = 0; i < numOfDirections; i++)
                 {
-                    RaycastInput input = new RaycastInput()
-                    {
-                        Filter = new CollisionFilter()
-                        {
-                            CollidesWith = mask,
-                            BelongsTo = 2,
-                            GroupIndex = 0
-                        },
-                        Start = translation.Value,
-                        End = translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance
-                    };
-                    //bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, mask, ref physicsWorld , out RaycastHit raycastHit);
-                    bool hit = physicsWorld.CastRay(input, out RaycastHit raycastHit);
+                    bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, mask, ref physicsWorld, out RaycastHit raycastHit);
 
                     if (hit)
                     {

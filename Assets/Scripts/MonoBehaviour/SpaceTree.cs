@@ -31,7 +31,8 @@ public class SpaceTree : MonoBehaviour
         try
         {
             BoidTree.Draw();
-        } catch (Exception)
+        }
+        catch (Exception)
         {
         }
     }
