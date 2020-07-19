@@ -7,6 +7,8 @@ using Unity.Physics.Systems;
 using Unity.Transforms;
 using RaycastHit = Unity.Physics.RaycastHit;
 
+//[UpdateBefore(typeof(PushByForceSystem))]
+[UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(PushByForceSystem))]
 public class ObstacleAvoidanceSystem : JobComponentSystem
 {
     private NativeArray<float3> sphereDirections;
@@ -34,15 +36,27 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
         float boidObstacleProximityPush = Settings.Instance.boidObstacleProximityPush;
         uint mask = Settings.Instance.boidObstacleMask;
         BuildPhysicsWorld physicsWorldSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<BuildPhysicsWorld>();
-        CollisionWorld collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
-
+        PhysicsWorld physicsWorld = physicsWorldSystem.PhysicsWorld;
+        inputDeps = JobHandle.CombineDependencies(inputDeps, World.GetOrCreateSystem<EndFramePhysicsSystem>().GetOutputDependency());
         return Entities.WithAny<BoidComponent>().ForEach((ref ForceComponent forceComponent, in Translation translation, in LocalToWorld localToWorld) =>
             {
                 float3 force = default;
                 for (int i = 0; i < numOfDirections; i++)
                 {
-                    bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, mask, collisionWorld
-                        , out RaycastHit raycastHit);
+                    RaycastInput input = new RaycastInput()
+                    {
+                        Filter = new CollisionFilter()
+                        {
+                            CollidesWith = mask,
+                            BelongsTo = 2,
+                            GroupIndex = 0
+                        },
+                        Start = translation.Value,
+                        End = translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance
+                    };
+                    //bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, mask, ref physicsWorld , out RaycastHit raycastHit);
+                    bool hit = physicsWorld.CastRay(input, out RaycastHit raycastHit);
+
                     if (hit)
                     {
                         float hitDistance = math.length(translation.Value - raycastHit.Position);

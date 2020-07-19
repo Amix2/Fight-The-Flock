@@ -1,4 +1,5 @@
 ﻿using Octrees;
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -27,6 +28,11 @@ public class SpaceTree : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        BoidTree.Draw();
+        try
+        {
+            BoidTree.Draw();
+        } catch (Exception)
+        {
+        }
     }
 }

@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
+[UpdateAfter(typeof(PushByForceSystem))]
 internal class RotateUpSystem : JobComponentSystem
 {
     protected override JobHandle OnUpdate(JobHandle inputDeps)
