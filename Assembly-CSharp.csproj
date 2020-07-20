@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\Components\Boids\BoidComponent.cs" />
     <Compile Include="Assets\Scripts\Components\Boids\BoidSpawnerComponent.cs" />
     <Compile Include="Assets\Scripts\Components\ForceComponent.cs" />
+    <Compile Include="Assets\Scripts\FPSCounter\FPSText.cs" />
     <Compile Include="Assets\Scripts\MonoBehaviour\SpaceTree.cs" />
     <Compile Include="Assets\Scripts\Octree\CodeGenerator\GeneratorOctreeIdentityComponents.cs" />
     <Compile Include="Assets\Scripts\Octree\CodeGenerator\OctreeCodeGenerator.cs" />
