@@ -30,9 +30,9 @@ public class SurroundingForcesSystem : JobComponentSystem
 
             float3 offsetToFlockCenter = collector.FlockCentre - localToWorld.Position;
 
-            forceComponent.Force += Utils.SteerTowards(localToWorld.Up, offsetToFlockCenter) * cohesionForceStrength 
-                + Utils.SteerTowards(localToWorld.Up, collector.FlockHeading) * alignmentForceStrength 
-                + Utils.SteerTowards(localToWorld.Up, collector.SeparationHeading) * avoidanceForceStrength * Utils.KernelFunction(math.lengthsq(collector.SeparationHeading) / (avoidanceForceStrength* avoidanceForceStrength));
+            forceComponent.Force += Utils.SteerTowards(localToWorld.Up, offsetToFlockCenter) * cohesionForceStrength
+                + Utils.SteerTowards(localToWorld.Up, collector.FlockHeading) * alignmentForceStrength
+                + Utils.SteerTowards(localToWorld.Up, collector.SeparationHeading) * avoidanceForceStrength * Utils.KernelFunction(math.lengthsq(collector.SeparationHeading) / (avoidanceForceStrength * avoidanceForceStrength));
         }).Schedule(inputDeps);
     }
 
@@ -57,14 +57,14 @@ public class SurroundingForcesSystem : JobComponentSystem
         }
 
         public float3 FlockHeading { get => flockHeading; }
-        public float3 FlockCentre { get => flockCentre / numFlockmates;  }
+        public float3 FlockCentre { get => flockCentre / numFlockmates; }
         public float3 SeparationHeading { get => separationHeading; }
         public int NumFlockmates { get => numFlockmates; }
 
         public void Collect(OctreeItem item)
         {
             Entity entity = hashMap[item.id];
-            if(componentData.HasComponent(entity))
+            if (componentData.HasComponent(entity))
             {
                 LocalToWorld localToWorld = componentData[entity];
                 float3 direction = localToWorld.Up;
@@ -73,7 +73,7 @@ public class SurroundingForcesSystem : JobComponentSystem
                 numFlockmates++;
                 float3 offset = boidPosition - localToWorld.Position; // item --->>> this
                 float sqrDist = math.lengthsq(localToWorld.Position - boidPosition);
-                if(sqrDist < sqrSeparationDistance)
+                if (sqrDist < sqrSeparationDistance)
                 {
                     separationHeading += offset;
                 }
