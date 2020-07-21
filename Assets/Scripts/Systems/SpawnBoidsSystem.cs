@@ -9,7 +9,7 @@ using Random = Unity.Mathematics.Random;
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public class SpawnBoidsSystem : JobComponentSystem
 {
-    private BeginSimulationEntityCommandBufferSystem beginSimulationEntityCBS;
+    private EndInitializationEntityCommandBufferSystem beginSimulationEntityCBS;
     private Random random;
 
     protected override void OnCreate()
@@ -17,7 +17,7 @@ public class SpawnBoidsSystem : JobComponentSystem
         base.OnCreate();
         random = new Random(52);
         GizmosDrawer.OnDrawGizmosAction += OnGiznos;
-        beginSimulationEntityCBS = World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
+        beginSimulationEntityCBS = World.GetOrCreateSystem<EndInitializationEntityCommandBufferSystem>();
     }
 
     protected override void OnDestroy()
@@ -31,8 +31,9 @@ public class SpawnBoidsSystem : JobComponentSystem
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Random random = new Random((uint)(Time.ElapsedTime * 100000));
-            EntityCommandBuffer.Concurrent ecb = beginSimulationEntityCBS.CreateCommandBuffer().ToConcurrent();
-            inputDeps = Entities.WithoutBurst().ForEach((int entityInQueryIndex, ref BoidSpawnerComponent prefabComponent) =>
+            //EntityCommandBuffer commandBuffer = beginSimulationEntityCBS.CreateCommandBuffer();
+            //EntityCommandBuffer.Concurrent ecb = commandBuffer.ToConcurrent();
+            Entities.WithStructuralChanges().ForEach((int entityInQueryIndex, ref BoidSpawnerComponent prefabComponent) =>
             {
                 float3 spawnOffset = prefabComponent.Offsets;
                 for (int i = 0; i < prefabComponent.SpawnNumber; i++)
@@ -42,13 +43,17 @@ public class SpawnBoidsSystem : JobComponentSystem
                         spawnOffset.y * (2 * random.NextFloat() - 1),
                         spawnOffset.z * (2 * random.NextFloat() - 1)
                         );
-                    Entity entity = ecb.Instantiate(entityInQueryIndex, prefabComponent.Entity);
+                    //Entity entity = ecb.Instantiate(entityInQueryIndex, prefabComponent.Entity);
+                    Entity entity = EntityManager.Instantiate(prefabComponent.Entity);
+
                     float3 position = prefabComponent.Center + offset;
-                    ecb.SetComponent(entityInQueryIndex, entity, new Translation { Value = position });
-                    OctreeCreator.AddItem(SpaceTree.BoidTreeID, entity, position, entity, ecb);
+                    //ecb.SetComponent(entityInQueryIndex, entity, new Translation { Value = position });
+                    EntityManager.AddComponentData(entity, new Translation { Value = position });
+                    OctreeCreator.AddItem(SpaceTree.BoidTreeID, entity, position, entity, EntityManager);
                 }
-            }).Schedule(inputDeps);
-            beginSimulationEntityCBS.AddJobHandleForProducer(inputDeps);
+            }).Run();//.Schedule(inputDeps);
+            //commandBuffer.Playback(EntityManager);
+           // beginSimulationEntityCBS.AddJobHandleForProducer(inputDeps);
         }
         return inputDeps;
     }

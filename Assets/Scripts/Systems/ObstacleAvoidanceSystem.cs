@@ -8,6 +8,7 @@ using Unity.Transforms;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 //[UpdateBefore(typeof(PushByForceSystem))]
+[UpdateAfter(typeof(EndFramePhysicsSystem))]
 [UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(PushByForceSystem))]
 public class ObstacleAvoidanceSystem : JobComponentSystem
 {
@@ -32,7 +33,7 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
         int numOfDirections = this.numOfDirections;
         float maxBoidObstacleAvoidance = Settings.Instance.maxBoidObstacleAvoidance;
         float minBoidObstacleDist = Settings.Instance.minBoidObstacleDist;
-        float forceStrenght = Settings.Instance.avoidanceForceStrength;
+        float forceStrenght = Settings.Instance.wallAvoidanceForceStrength;
         float boidObstacleProximityPush = Settings.Instance.boidObstacleProximityPush;
         uint mask = Settings.Instance.boidObstacleMask;
         BuildPhysicsWorld physicsWorldSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<BuildPhysicsWorld>();
