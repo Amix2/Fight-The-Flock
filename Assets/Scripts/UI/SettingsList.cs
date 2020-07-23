@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,7 +29,7 @@ public class SettingsList : MonoBehaviour
         AddPanel("cohesionForceStrength", Settings.Instance.cohesionForceStrength, new SliderValueSetter(0, 50, Settings.Instance.cohesionForceStrength, (float val) => Settings.Instance.cohesionForceStrength = val), content);
         AddPanel("alignmentForceStrength", Settings.Instance.alignmentForceStrength, new SliderValueSetter(0, 50, Settings.Instance.alignmentForceStrength, (float val) => Settings.Instance.alignmentForceStrength = val), content);
         AddPanel("sharedAvoidanceForceStrength", Settings.Instance.sharedAvoidanceForceStrength, new SliderValueSetter(0, 250, Settings.Instance.sharedAvoidanceForceStrength, (float val) => Settings.Instance.sharedAvoidanceForceStrength = val), content);
-        AddPanel("wallAvoidanceForceStrength", Settings.Instance.wallAvoidanceForceStrength,  new SliderValueSetter(0, 250, Settings.Instance.maxBoidSpeed, (float val) => Settings.Instance.wallAvoidanceForceStrength = val), content);
+        AddPanel("wallAvoidanceForceStrength", Settings.Instance.wallAvoidanceForceStrength,  new SliderValueSetter(0, 250, Settings.Instance.wallAvoidanceForceStrength, (float val) => Settings.Instance.wallAvoidanceForceStrength = val), content);
         AddPanel("maxBoidSpeed", Settings.Instance.maxBoidSpeed, new SliderValueSetter(0, 10, Settings.Instance.maxBoidSpeed, (float val) => Settings.Instance.maxBoidSpeed = val), content);
         AddPanel("minBoidSpeed", Settings.Instance.minBoidSpeed, new SliderValueSetter(0, 10, Settings.Instance.minBoidSpeed, (float val) => Settings.Instance.minBoidSpeed = val), content);
         AddPanel("maxBoidObstacleAvoidance", Settings.Instance.maxBoidObstacleAvoidance, new SliderValueSetter(0, 10, Settings.Instance.maxBoidObstacleAvoidance, (float val) => Settings.Instance.maxBoidObstacleAvoidance = val), content);
@@ -38,6 +39,11 @@ public class SettingsList : MonoBehaviour
         AddPanel("boidSeparationDistance", Settings.Instance.boidSeparationDistance, new SliderValueSetter(0, 10, Settings.Instance.boidSeparationDistance, (float val) => Settings.Instance.boidSeparationDistance = val), content);
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
+    }
+
+    private void Awake()
+    {
+        FixedRateUtils.EnableFixedRateWithCatchUp(World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>(), Time.fixedDeltaTime);
     }
 
     private void AddPanel(string name, float initValue, IValueSetter valueSetter, Transform content)
