@@ -84,6 +84,7 @@
     <Compile Include="Assets\Scripts\Systems\SurroundingForcesSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\TargetForceSystem.cs" />
     <Compile Include="Assets\Scripts\Tests\SteerTowardsTest.cs" />
+    <Compile Include="Assets\Scripts\UI\OptionsToggle.cs" />
     <Compile Include="Assets\Scripts\UI\SettingsList.cs" />
     <Compile Include="Assets\Scripts\Utils\GizmosDrawer.cs" />
     <Compile Include="Assets\Scripts\Utils\PhysicUtils.cs" />

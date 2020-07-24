@@ -52,8 +52,8 @@ public class SpawnBoidsSystem : JobComponentSystem
                     OctreeCreator.AddItem(SpaceTree.BoidTreeID, entity, position, entity, EntityManager);
                 }
             }).Run();//.Schedule(inputDeps);
-            //commandBuffer.Playback(EntityManager);
-           // beginSimulationEntityCBS.AddJobHandleForProducer(inputDeps);
+                     //commandBuffer.Playback(EntityManager);
+                     // beginSimulationEntityCBS.AddJobHandleForProducer(inputDeps);
         }
         return inputDeps;
     }

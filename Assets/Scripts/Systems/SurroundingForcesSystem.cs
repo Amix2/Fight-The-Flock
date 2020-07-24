@@ -1,12 +1,10 @@
-﻿
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
-using UnityEngine;
 
 [UpdateAfter(typeof(EndFramePhysicsSystem))]
 public class SurroundingForcesSystem : JobComponentSystem
@@ -38,15 +36,15 @@ public class SurroundingForcesSystem : JobComponentSystem
 
     private struct Collector : ICollector
     {
-        ComponentDataFromEntity<LocalToWorld> componentData;
-        NativeHashMap<ushort, Entity> hashMap;
-        readonly float sqrSeparationDistance;
-        float3 boidPosition;
+        private ComponentDataFromEntity<LocalToWorld> componentData;
+        private NativeHashMap<ushort, Entity> hashMap;
+        private readonly float sqrSeparationDistance;
+        private float3 boidPosition;
 
-        float3 flockHeading;
-        float3 flockCentre;
-        float3 separationHeading;
-        int numFlockmates;
+        private float3 flockHeading;
+        private float3 flockCentre;
+        private float3 separationHeading;
+        private int numFlockmates;
 
         public Collector(ComponentDataFromEntity<LocalToWorld> componentData, NativeHashMap<ushort, Entity> hashMap, float separationDistance, float3 boidPosition) : this()
         {
@@ -79,7 +77,5 @@ public class SurroundingForcesSystem : JobComponentSystem
                 }
             }
         }
-
     }
 }
-
