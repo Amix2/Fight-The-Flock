@@ -3601,7 +3601,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 434497621}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10.919727, y: -32.610813, z: -2.9435449}
+  m_LocalPosition: {x: 10.919727, y: -32.610813, z: -35.66}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 814367406}
@@ -3688,7 +3688,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh21556
+  m_Name: pb_Mesh27050
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4398,7 +4398,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24188
+  m_Name: pb_Mesh28058
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4561,7 +4561,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh21648
+  m_Name: pb_Mesh27142
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5576,12 +5576,12 @@ MonoBehaviour:
   cohesionForceStrength: 0
   alignmentForceStrength: 0
   sharedAvoidanceForceStrength: 0
-  wallAvoidanceForceStrength: 200
+  wallAvoidanceForceStrength: 300
   maxBoidSpeed: 4
   minBoidSpeed: 3
   maxBoidObstacleAvoidance: 5
   minBoidObstacleDist: 1
-  boidObstacleProximityPush: 100
+  boidObstacleProximityPush: 10000
   boidSurroundingsViewRange: 5
   boidSeparationDistance: 1
   boidObstacleMask: 1
@@ -13502,7 +13502,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1626763345}
   m_LocalRotation: {x: -0, y: -0.27752322, z: -0, w: 0.9607189}
-  m_LocalPosition: {x: -0.85027266, y: -5.0108128, z: -4.593545}
+  m_LocalPosition: {x: 17.8, y: -5.0108128, z: -34.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 814367406}
@@ -13956,7 +13956,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh21696
+  m_Name: pb_Mesh27190
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -14253,7 +14253,7 @@ MonoBehaviour:
     x: 10
     y: 5
     z: 5
-  SpawnNumber: 1
+  SpawnNumber: 10
 --- !u!4 &2088380777
 Transform:
   m_ObjectHideFlags: 0

@@ -719,7 +719,7 @@ MonoBehaviour:
     m_CollidesWithCategories:
       m_Override: 0
       m_Value:
-        Category00: 1
+        Category00: 0
         Category01: 0
         Category02: 0
         Category03: 0

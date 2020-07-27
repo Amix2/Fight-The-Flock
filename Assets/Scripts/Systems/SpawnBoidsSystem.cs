@@ -49,7 +49,8 @@ public class SpawnBoidsSystem : JobComponentSystem
                     float3 position = prefabComponent.Center + offset;
                     //ecb.SetComponent(entityInQueryIndex, entity, new Translation { Value = position });
                     EntityManager.AddComponentData(entity, new Translation { Value = position });
-                    OctreeCreator.AddItem(SpaceTree.BoidTreeID, entity, position, entity, EntityManager);
+                    EntityManager.AddComponentData(entity, new Rotation { Value = new quaternion(random.NextFloat(), random.NextFloat(), random.NextFloat(), random.NextFloat())});
+                    //OctreeCreator.AddItem(SpaceTree.BoidTreeID, entity, position, entity, EntityManager);
                 }
             }).Run();//.Schedule(inputDeps);
                      //commandBuffer.Playback(EntityManager);
