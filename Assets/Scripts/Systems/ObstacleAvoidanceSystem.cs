@@ -8,8 +8,9 @@ using Unity.Transforms;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 //[UpdateBefore(typeof(PushByForceSystem))]
-[UpdateAfter(typeof(EndFramePhysicsSystem))]
-[UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(PushByForceSystem))]
+[UpdateAfter(typeof(ExportPhysicsWorld))]
+[UpdateBefore(typeof(EndFramePhysicsSystem))]
+[UpdateBefore(typeof(PushByForceSystem))]
 public class ObstacleAvoidanceSystem : JobComponentSystem
 {
     private NativeArray<float3> sphereDirections;
@@ -36,10 +37,12 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
         float forceStrenght = Settings.Instance.wallAvoidanceForceStrength;
         float boidObstacleProximityPush = Settings.Instance.boidObstacleProximityPush;
         uint mask = Settings.Instance.boidObstacleMask;
+
         BuildPhysicsWorld physicsWorldSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<BuildPhysicsWorld>();
         PhysicsWorld physicsWorld = physicsWorldSystem.PhysicsWorld;
-        inputDeps = JobHandle.CombineDependencies(inputDeps, World.GetOrCreateSystem<EndFramePhysicsSystem>().GetOutputDependency());
-        return Entities.WithAny<BoidComponent>().ForEach((ref ForceComponent forceComponent, in Translation translation, in LocalToWorld localToWorld) =>
+       // inputDeps = JobHandle.CombineDependencies(inputDeps, World.GetOrCreateSystem<EndFramePhysicsSystem>().GetOutputDependency());
+
+        inputDeps =  Entities.WithAny<BoidComponent>().ForEach((ref ForceComponent forceComponent, in Translation translation, in LocalToWorld localToWorld) =>
             {
                 float3 force = default;
                 for (int i = 0; i < numOfDirections; i++)
@@ -64,6 +67,10 @@ public class ObstacleAvoidanceSystem : JobComponentSystem
                 force = Utils.SteerTowards(localToWorld.Up, force / numOfDirections * forceStrenght);
                 forceComponent.Force += force;
             }).Schedule(inputDeps);
+
+        World.GetOrCreateSystem<EndFramePhysicsSystem>().AddInputDependency(inputDeps);
+
+        return inputDeps;
     }
 
     protected override void OnDestroy()
