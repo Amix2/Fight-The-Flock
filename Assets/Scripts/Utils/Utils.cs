@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.Internal;
 
 public static class Utils
 {
@@ -71,4 +73,42 @@ public static class Utils
     {
         return math.pow(1 - math.pow(x, steepness), delayGrowth);
     }
+
+    public static void DebugDrawCube(float3 minPoint, float3 size, Color color)
+    {
+        /*
+         * 2 3
+         * 0 1
+         * --------
+         * 6 7
+         * 4 5
+         */
+        float3[] points = new float3[]
+        {
+            minPoint,
+            minPoint + size * new float3(1,0,0),
+            minPoint + size * new float3(0,1,0),
+            minPoint + size * new float3(1,1,0),
+            minPoint + size * new float3(0,0,1),
+            minPoint + size * new float3(1,0,1),
+            minPoint + size * new float3(0,1,1),
+            minPoint + size * new float3(1,1,1),
+        };
+        Debug.DrawLine(points[0], points[1], color);
+        Debug.DrawLine(points[0], points[2], color);
+        Debug.DrawLine(points[2], points[3], color);
+        Debug.DrawLine(points[1], points[3], color);
+
+        Debug.DrawLine(points[4], points[5], color);
+        Debug.DrawLine(points[4], points[6], color);
+        Debug.DrawLine(points[6], points[7], color);
+        Debug.DrawLine(points[5], points[7], color);
+
+        Debug.DrawLine(points[0], points[4], color);
+        Debug.DrawLine(points[1], points[5], color);
+        Debug.DrawLine(points[2], points[6], color);
+        Debug.DrawLine(points[3], points[7], color);
+
+    }
+
 }

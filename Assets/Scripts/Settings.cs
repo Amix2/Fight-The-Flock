@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Settings : MonoBehaviour
@@ -23,5 +24,9 @@ public class Settings : MonoBehaviour
     {
         Instance = this;
         FixedRateUtils.EnableFixedRateWithCatchUp(World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>(), Time.fixedDeltaTime);
+    }
+
+    private void Update()
+    {
     }
 }

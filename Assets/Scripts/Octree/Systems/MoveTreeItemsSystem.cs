@@ -18,10 +18,13 @@ internal partial class MoveTreeItemsSystem : JobComponentSystem
     /// </summary>
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
+        PerformanceMonitor.DEBUG_BeginSample(inputDeps, "MoveTreeItemsSystem");
+
         Octree[] trees = OctreeCreator.octrees.ToArray();
 
         JobHandle jobHandle = MoveItemsForTree(inputDeps, trees, moveInNodesQueue);
 
+        PerformanceMonitor.DEBUG_EndSample(jobHandle);
         return jobHandle;
     }
 

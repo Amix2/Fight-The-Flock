@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
+using UnityEngine;
 
 [UpdateAfter(typeof(EndFramePhysicsSystem))]
 public class PushByForceSystem : JobComponentSystem
@@ -13,13 +14,16 @@ public class PushByForceSystem : JobComponentSystem
         float dt = Time.DeltaTime;
         float maxBoidSpeed = Settings.Instance.maxBoidSpeed;
         float minBoidSpeed = Settings.Instance.minBoidSpeed;
-        return Entities.ForEach((ref PhysicsVelocity velocity, ref ForceComponent force, in PhysicsMass mass, in LocalToWorld localToWorld) =>
+        Entities.WithoutBurst().ForEach((ref PhysicsVelocity velocity, ref ForceComponent force, in PhysicsMass mass, in LocalToWorld localToWorld) =>
         {
             velocity.Linear += dt * force.Force; // dv = dt * a = dt * F / m
             if (math.lengthsq(velocity.Linear) == 0) velocity.Linear = localToWorld.Up;
             if (math.lengthsq(velocity.Linear) > maxBoidSpeed * maxBoidSpeed) velocity.Linear = math.normalize(velocity.Linear) * maxBoidSpeed;
             if (math.lengthsq(velocity.Linear) < minBoidSpeed * minBoidSpeed) velocity.Linear = math.normalize(velocity.Linear) * minBoidSpeed;
+            Debug.DrawRay(localToWorld.Position, force.Force, Color.red);
             force.Force = new float3(0, 0, 0);
-        }).Schedule(inputDeps);
+        }).Run();//.Schedule(inputDeps);
+
+        return inputDeps;
     }
 }
