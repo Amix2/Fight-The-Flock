@@ -67,9 +67,9 @@ public class SurroundingForcesSystem222 : JobComponentSystem
             numFlockmates++;
             float3 offset = boidPosition - item.position; // item --->>> this
             float sqrDist = math.lengthsq(item.position - boidPosition);
-            if (sqrDist < sqrSeparationDistance)
+            if (sqrDist < sqrSeparationDistance && sqrDist > 0f)
             {
-                separationHeading += offset;
+                separationHeading += math.normalize(offset) * Utils.KernelFunction(sqrDist / sqrSeparationDistance, 1);
             }
         }
     }

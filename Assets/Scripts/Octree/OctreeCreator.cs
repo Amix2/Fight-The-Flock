@@ -74,7 +74,7 @@ namespace Octrees
         /// <param name="item">item</param>
         /// <param name="position">items's position</param>
         /// <param name="entity">Entity which generaes position update</param>
-        public static void AddItem<T>(ushort treeID, T item, float3 position, Entity entity, EntityCommandBuffer.Concurrent commandBuffer) where T : struct, IEquatable<T>
+        public static void AddItem<T>(ushort treeID, T item, float3 position, Entity entity, EntityCommandBuffer.ParallelWriter commandBuffer) where T : struct, IEquatable<T>
         {
             Octree tree = octrees[treeID];
             ushort itemID = tree.AddItem(position);

@@ -9,18 +9,20 @@ public static class PhysicUtils
     /// </summary>
     /// <param name="RayFrom"></param>
     /// <param name="RayTo"></param>
-    /// <param name="collisionWorld"></param>
+    /// <param name="collidesWithMask"></param>
+    /// <param name="belongsToMask"></param>
+    /// <param name="physicsWorld"></param>
     /// <param name="hit"></param>
     /// <returns></returns>
-    public static bool Raycast(float3 RayFrom, float3 RayTo, uint colliderMask, ref PhysicsWorld physicsWorld, out RaycastHit hit)
+    public static bool Raycast(float3 RayFrom, float3 RayTo, uint collidesWithMask, uint belongsToMask, ref PhysicsWorld physicsWorld, out RaycastHit hit)
     {
         CollisionWorld collisionWorld = physicsWorld.CollisionWorld;
         RaycastInput input = new RaycastInput()
         {
             Filter = new CollisionFilter()
             {
-                CollidesWith = colliderMask, // all 1s, so all layers, collide with everything
-                BelongsTo = 2,
+                CollidesWith = collidesWithMask,
+                BelongsTo = belongsToMask,
                 GroupIndex = 0
             },
             Start = RayFrom,

@@ -50,7 +50,7 @@ namespace IdentityComponents
             }
         }
 
-        public static void SetIdentityComponent(int i, Entity entity, EntityCommandBuffer.Concurrent commandBuffer)
+        public static void SetIdentityComponent(int i, Entity entity, EntityCommandBuffer.ParallelWriter commandBuffer)
         {
             if (i >= 1) throw new System.Exception("Too many trees requested, max amount: 1, requested: " + i);
 
