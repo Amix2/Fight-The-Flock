@@ -18,7 +18,7 @@ public static class Utils
 
         float3 directionProjection = ProjectionVectorOntoPlane(normVelocity, targetOffset);
 
-        return directionProjection * (1 - cosAng);
+        return directionProjection;// math.normalizesafe(directionProjection) * math.sqrt(sqrDistToTarget) * (1 - cosAng);
     }
 
     /// <summary>
@@ -71,6 +71,9 @@ public static class Utils
     /// <returns>Value [0,1]</returns>
     public static float KernelFunction(float x, int steepness = 2, int delayGrowth = 3)
     {
+#if UNITY_EDITOR
+        if (x < 0 || x > 1) throw new System.Exception("KernelFunction with wrong parameter x: " + x);
+#endif
         return math.pow(1 - math.pow(x, steepness), delayGrowth);
     }
 

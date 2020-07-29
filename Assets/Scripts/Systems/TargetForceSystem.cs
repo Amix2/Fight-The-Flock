@@ -6,7 +6,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 
-[UpdateAfter(typeof(EndFramePhysicsSystem))]
+//[UpdateAfter(typeof(EndFramePhysicsSystem))]
 [UpdateBefore(typeof(PushByForceSystem))]
 public class TargetForceSystem : JobComponentSystem
 {

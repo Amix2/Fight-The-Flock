@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
+using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 namespace Boids
@@ -15,9 +16,7 @@ namespace Boids
     public class ObstacleAvoidanceSystem : JobComponentSystem
     {
         private NativeArray<float3> sphereDirections;
-        private readonly int numOfDirections = 20;
-
-
+        private readonly int numOfDirections = 100;
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
@@ -28,34 +27,83 @@ namespace Boids
             float forceStrenght = Settings.Instance.wallAvoidanceForceStrength;
             float boidObstacleProximityPush = Settings.Instance.boidObstacleProximityPush;
             uint mask = Settings.Instance.boidObstacleMask;
+            float cosAngle = Settings.Instance.boidObstacleMaxAngle;
 
             BuildPhysicsWorld physicsWorldSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<BuildPhysicsWorld>();
             PhysicsWorld physicsWorld = physicsWorldSystem.PhysicsWorld;
 
-            inputDeps = Entities.WithAny<BoidComponent>().ForEach((ref ForceComponent forceComponent, in Translation translation, in LocalToWorld localToWorld) =>
+            inputDeps = Entities.WithoutBurst().WithAny<BoidComponent>().ForEach((ref ForceComponent forceComponent, in Translation translation, in LocalToWorld localToWorld) =>
                {
+                   if (!PhysicUtils.Raycast(translation.Value, translation.Value + localToWorld.Up * maxBoidObstacleAvoidance*0.5f, mask, 2, ref physicsWorld, out RaycastHit raycastHitTmp))
+                   {
+                       return;
+                   }
                    float3 force = default;
+                   float closestHitDistance = float.MaxValue;
+                   float bestHitAngle = float.MaxValue;
+                   float3 bestDir = localToWorld.Up;
+                   bool hitGot = false;
+                   float maxPushFactor = 0;
                    for (int i = 0; i < numOfDirections; i++)
                    {
-                       bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, mask, 2, ref physicsWorld, out RaycastHit raycastHit);
+                       float currentAngle = 1f - math.dot(sphereDirections[i], localToWorld.Up);
+                       if (currentAngle > bestHitAngle) continue;
 
-                       if (hit)
+                       bool hit = PhysicUtils.Raycast(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, mask, 2, ref physicsWorld, out RaycastHit raycastHit);
+                       Debug.DrawLine(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, Color.blue);
+                       if (!hit)
+                       {
+                           bestHitAngle = currentAngle;
+                           bestDir = sphereDirections[i];
+                       }
+                       else
                        {
                            float hitDistance = math.length(translation.Value - raycastHit.Position);
-                           float push;
-                           if (hitDistance > minBoidObstacleDist)
-                           {
-                               push = Utils.KernelFunction((hitDistance - minBoidObstacleDist) / (maxBoidObstacleAvoidance - minBoidObstacleDist));
-                           }
-                           else
-                           {
-                               push = boidObstacleProximityPush * Utils.KernelFunction(hitDistance / minBoidObstacleDist) + 1;
-                           }
-                           force += push * -sphereDirections[i];
+                           if (closestHitDistance > hitDistance) closestHitDistance = hitDistance;
+                           hitGot = true;
+                           Debug.DrawLine(translation.Value, raycastHit.Position, Color.green);
+                       }
+                       {
+                           //if (hit)
+                           //{
+                           //    float hitDistance = math.length(translation.Value - raycastHit.Position);
+
+                           //    if (hitDistance > maxBoidObstacleAvoidance)
+                           //    {
+                           //        continue;    // Raycast is not 100% accurate, sometimes it finds hits outsice of given radius, we just ignore them
+                           //    }
+                           //    float pushFactor;
+                           //    if (hitDistance > minBoidObstacleDist)
+                           //    {
+                           //        pushFactor = Utils.KernelFunction((hitDistance - minBoidObstacleDist) / (maxBoidObstacleAvoidance - minBoidObstacleDist));
+                           //        //Debug.DrawLine(translation.Value, raycastHit.Position, Color.yellow);
+                           //    }
+                           //    else
+                           //    {
+                           //        pushFactor = boidObstacleProximityPush * Utils.KernelFunction(hitDistance / minBoidObstacleDist) + 1;
+                           //        //Debug.DrawLine(translation.Value, raycastHit.Position, Color.red);
+
+                           //    }
+                           //    force += pushFactor * -sphereDirections[i];
+                           //    if (maxPushFactor < pushFactor) maxPushFactor = pushFactor;
+                           //}
+                           //else
+                           //{
+                           //    Debug.DrawLine(translation.Value, translation.Value + sphereDirections[i] * maxBoidObstacleAvoidance, Color.white);
+
+                           //}
                        }
                    }
-                   force = Utils.SteerTowards(localToWorld.Up, force / numOfDirections * forceStrenght);
-                   forceComponent.Force += force;
+                   Debug.DrawLine(translation.Value, translation.Value + bestDir * maxBoidObstacleAvoidance, Color.yellow);
+                   if (hitGot)
+                   {
+                       //force = Utils.SteerTowards(localToWorld.Up, translation.Value + bestDir * forceStrenght * Utils.KernelFunction(closestHitDistance / maxBoidObstacleAvoidance));
+                       force = Utils.SteerTowards(localToWorld.Up, translation.Value + bestDir * forceStrenght * Utils.KernelFunction(closestHitDistance / maxBoidObstacleAvoidance));
+                       Debug.DrawLine(translation.Value, translation.Value + bestDir * forceStrenght * Utils.KernelFunction(closestHitDistance / maxBoidObstacleAvoidance), Color.cyan);
+                       Debug.DrawLine(translation.Value, translation.Value + force, Color.red);
+
+                       forceComponent.Force += force;
+                   }
                }).Schedule(inputDeps);
 
             World.GetOrCreateSystem<EndFramePhysicsSystem>().AddInputDependency(inputDeps);

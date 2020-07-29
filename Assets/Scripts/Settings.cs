@@ -17,13 +17,15 @@ public class Settings : MonoBehaviour
     public float boidSurroundingsViewRange;
     public float boidSeparationDistance;
     public uint boidObstacleMask;
+    public float boidObstacleMaxAngle;  // cosinus 
+    public float3 pos;
 
     public static Settings Instance { get; private set; }
 
     public void Awake()
     {
         Instance = this;
-        FixedRateUtils.EnableFixedRateWithCatchUp(World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>(), Time.fixedDeltaTime);
+        //FixedRateUtils.EnableFixedRateWithCatchUp(World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>(), Time.fixedDeltaTime);
     }
 
     private void Update()
