@@ -14,7 +14,7 @@ public static class PhysicUtils
     /// <param name="physicsWorld"></param>
     /// <param name="hit"></param>
     /// <returns></returns>
-    public static bool Raycast(float3 RayFrom, float3 RayTo, uint collidesWithMask, uint belongsToMask, ref PhysicsWorld physicsWorld, out RaycastHit hit)
+    public static bool Raycast(float3 RayFrom, float3 RayTo, uint collidesWithMask, uint belongsToMask, PhysicsWorld physicsWorld, out RaycastHit hit)
     {
         CollisionWorld collisionWorld = physicsWorld.CollisionWorld;
         RaycastInput input = new RaycastInput()
@@ -28,7 +28,6 @@ public static class PhysicUtils
             Start = RayFrom,
             End = RayTo
         };
-
         return collisionWorld.CastRay(input, out hit);
     }
 }

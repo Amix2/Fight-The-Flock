@@ -27,8 +27,7 @@ namespace SpaceMap
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            PerformanceMonitor.DEBUG_BeginSample(inputDeps, "BoidHashMap");
-            BoidHashMap.cellSize = Settings.Instance.boidSurroundingsViewRange;
+            BoidHashMap.cellSize = Settings.Instance.Boid.surroundingsViewRange;
             //EntityArchetype archetype = EntityManager.CreateArchetype(typeof(BoidComponent), typeof(Translation), typeof(PhysicsVelocity));
             EntityQuery query = EntityManager.CreateEntityQuery(typeof(BoidComponent), typeof(Translation), typeof(PhysicsVelocity));
             BoidMap.Clear();
@@ -46,7 +45,6 @@ namespace SpaceMap
                 parallelWriter.Add(Utils.GetHash(translation.Value, cellSize), new BoidData { entity = entity, position = translation.Value, velocity = velocity.Linear });
             }).Schedule(inputDeps);
 
-            PerformanceMonitor.DEBUG_EndSample(inputDeps);
 
             return inputDeps;
         }

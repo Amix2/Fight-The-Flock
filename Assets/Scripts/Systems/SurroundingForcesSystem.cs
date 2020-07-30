@@ -14,11 +14,11 @@ public class SurroundingForcesSystem : JobComponentSystem
 {
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        float viewRange = Settings.Instance.boidSurroundingsViewRange;
-        float separationDistance = Settings.Instance.boidSeparationDistance;
-        float cohesionForceStrength = Settings.Instance.cohesionForceStrength;
-        float alignmentForceStrength = Settings.Instance.alignmentForceStrength;
-        float avoidanceForceStrength = Settings.Instance.sharedAvoidanceForceStrength;
+        float viewRange = Settings.Instance.Boid.surroundingsViewRange;
+        float separationDistance = Settings.Instance.Boid.separationDistance;
+        float cohesionForceStrength = Settings.Instance.Boid.Forces.cohesionForceStrength;
+        float alignmentForceStrength = Settings.Instance.Boid.Forces.alignmentForceStrength;
+        float avoidanceForceStrength = Settings.Instance.Boid.Forces.sharedAvoidanceForceStrength;
         NativeMultiHashMap<int, BoidData> boidMap = BoidHashMap.BoidMap;
         float cellSize = BoidHashMap.cellSize;
 

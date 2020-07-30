@@ -18,7 +18,7 @@ public static class Utils
 
         float3 directionProjection = ProjectionVectorOntoPlane(normVelocity, targetOffset);
 
-        return directionProjection;// math.normalizesafe(directionProjection) * math.sqrt(sqrDistToTarget) * (1 - cosAng);
+        return math.normalizesafe(directionProjection) * math.sqrt(sqrDistToTarget) * (1 - cosAng);
     }
 
     /// <summary>

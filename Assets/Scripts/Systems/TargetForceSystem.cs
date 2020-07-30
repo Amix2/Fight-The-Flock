@@ -13,7 +13,7 @@ public class TargetForceSystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         float3 center = new float3(0f, 0f, 0f);
-        float forceStrenght = Settings.Instance.targetForceStrength;
+        float forceStrenght = Settings.Instance.Boid.Forces.targetForceStrength;
         return Entities.ForEach((ref ForceComponent force, in Translation translation, in PhysicsVelocity velocity) =>
         {
             force.Force += Utils.SteerTowards(velocity.Linear, (center - translation.Value)) * forceStrenght;
