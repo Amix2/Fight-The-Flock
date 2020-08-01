@@ -38,8 +38,10 @@ public class SettingsList : MonoBehaviour
             new SliderValueSetter(0, 10, (float val) => Settings.Instance.Boid.maxSpeed = val), content);
         AddPanel("minBoidSpeed", Settings.Instance.Boid.minSpeed, 
             new SliderValueSetter(0, 10, (float val) => Settings.Instance.Boid.minSpeed = val), content);
-        AddPanel("boidSurroundingsViewRange", Settings.Instance.Boid.surroundingsViewRange,
+        AddPanel("surroundingsViewRange", Settings.Instance.Boid.surroundingsViewRange,
             new SliderValueSetter(0, 10, (float val) => Settings.Instance.Boid.surroundingsViewRange = val), content);
+        AddPanel("separationDistance", Settings.Instance.Boid.separationDistance,
+            new SliderValueSetter(0, 10, (float val) => Settings.Instance.Boid.separationDistance = val), content);
         AddPanel("rayAvoidDistance", Settings.Instance.Boid.ObstacleAvoidance.rayAvoidDistance,
             new SliderValueSetter(0, 10, (float val) => Settings.Instance.Boid.ObstacleAvoidance.rayAvoidDistance = val), content);
         AddPanel("proxymityAvoidDistance", Settings.Instance.Boid.ObstacleAvoidance.proxymityAvoidDistance,

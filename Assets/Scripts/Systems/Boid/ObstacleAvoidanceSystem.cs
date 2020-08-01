@@ -17,9 +17,9 @@ namespace Boids
     public class ObstacleAvoidanceSystem : JobComponentSystem
     {
         private NativeArray<float3> raySphereDirections;
-        private readonly int rayNumOfDirections = 100;
+        private readonly int rayNumOfDirections = 50;
         private NativeArray<float3> proxySphereDirections;
-        private readonly int proxyNumOfDirections = 20;
+        private readonly int proxyNumOfDirections = 10;
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
@@ -76,6 +76,7 @@ namespace Boids
 
                 float3 force = default;
 
+                float sqrProxyAvoidDistance = proxyAvoidDistance * proxyAvoidDistance;
                 for (int i = 0; i < proxyNumOfDirections; i++)
                 {
                     float3 currenetDir = math.rotate(localToWorld.Value, proxyShereDirections[i]);
@@ -86,7 +87,6 @@ namespace Boids
                     {
                         float sqrHitDistance = math.lengthsq(translation.Value - raycastHit.Position);
 
-                        float sqrProxyAvoidDistance = proxyAvoidDistance * proxyAvoidDistance;
                         if (sqrHitDistance > sqrProxyAvoidDistance)
                         {
                             continue;    // Raycast is not 100% accurate, sometimes it finds hits outsice of given radius, we just ignore them
