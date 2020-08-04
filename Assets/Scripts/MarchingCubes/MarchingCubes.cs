@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEditor;
@@ -8,17 +9,37 @@ using UnityEngine;
 
 public static class MarchingCubes
 {
+    static public int maxDictSize = 0;
+
+    public struct NoiseVal
+    {
+        public float3 Grad => noiseGrad.xyz;
+        public float Noise => noiseGrad.w;
+        public float3 Pos;
+        private float4 noiseGrad;
+
+        public NoiseVal(float3 pos, float4 noiseGrad)
+        {
+            Pos = pos;
+            this.noiseGrad = noiseGrad;
+            this.noiseGrad.w = (this.noiseGrad.w + 1f) * 0.5f;
+        }
+    }
+
     static public GameObject CreateChunkGameObject(SpawnChunkData chunk)
     {
         GameObject gameObject = new GameObject("meshGO", typeof(MeshFilter), typeof(MeshRenderer));
         float3 sampleDist = chunk.size / chunk.sampleCount;
         int3 samples = (int3)(chunk.size / sampleDist) + 1;
         int numOfSamples = samples.x * samples.y * samples.z;
-        float4[] noiseValues = new float4[numOfSamples];
+        NoiseVal[] noiseValues = new NoiseVal[numOfSamples];
         float3 maxPoint = chunk.minPoint + chunk.size;
 
         List<Vector3> vertices = new List<Vector3>();
+        List<Vector3> normals = new List<Vector3>();
         List<int> triangles = new List<int>();
+
+        float startTime = Time.realtimeSinceStartup*1000;
 
         for (int3 iter=default; iter.z < samples.z; iter.z++)
             for (iter.y = 0; iter.y < samples.y; iter.y++)
@@ -26,22 +47,27 @@ public static class MarchingCubes
                 {
                     int index = GetIndex(samples, iter);
                     float3 pos = chunk.minPoint + iter * sampleDist;
-                    float noise = Noise.snoise(pos * chunk.noiseFactor);
-                    noiseValues[index] = new float4(pos, (noise+1f)*0.5f);
-                    float val = (noise + 1f) * 0.5f;    // 0 - 1
-                    if (val > chunk.isoSurfaceLevel)
-                    {
-                        //Gizmos.color = new Color(val, val, val);
-                       // Gizmos.DrawSphere(pos, 0.2f);
-                    }
+                    float4 noise = Noise.snoise_grad(pos * chunk.noiseFactor);
+                    noiseValues[index] = new NoiseVal(pos, noise);// new float4(pos, (noise.w+1f)*0.5f);
+                    //Debug.DrawRay(pos, noise.xyz, Color.cyan, 10f);
                 }
 
-        for (int3 id = default; id.z < samples.z-1; id.z++)
-            for (id.y = 0; id.y < samples.y-1; id.y++)
-                for (id.x = 0; id.x < samples.x-1; id.x++)
+        float timeAfterNoise = Time.realtimeSinceStartup * 1000;
+
+
+        // float4[] oldPoints = new float4[8];
+
+        Dictionary<float3, int> newLayerPosIdDict = new Dictionary<float3, int>();
+        for (int3 id = default; id.z < samples.z - 1; id.z++)
+        {
+            Dictionary<float3, int> oldLayerPosIdDict = newLayerPosIdDict;
+            newLayerPosIdDict = new Dictionary<float3, int>();
+            for (id.y = 0; id.y < samples.y - 1; id.y++)
+            {
+                for (id.x = 0; id.x < samples.x - 1; id.x++)
                 {
                     // 8 corners of the current cube
-                    float4[] cubeCorners = {
+                    NoiseVal[] cubeCorners = {
                         noiseValues[GetIndex(samples, new int3(id.x, id.y, id.z ))],
                         noiseValues[GetIndex(samples, new int3(id.x + 1, id.y, id.z))],
                         noiseValues[GetIndex(samples, new int3(id.x + 1, id.y, id.z + 1))],
@@ -51,12 +77,14 @@ public static class MarchingCubes
                         noiseValues[GetIndex(samples, new int3(id.x + 1, id.y + 1, id.z + 1))],
                         noiseValues[GetIndex(samples, new int3(id.x, id.y + 1, id.z + 1))]
                     };
-                    for(int i=0; i<cubeCorners.Length-1; i++)
+
+                    float3 topPoint = noiseValues[GetIndex(samples, new int3(id.x + 1, id.y + 1, id.z + 1))].Pos;
+                    for(int i=0; i<8; i++)
                     {
-                        float4 dif = math.abs(cubeCorners[i] - cubeCorners[i + 1]);
-                        if(math.any(dif > new float4(1,1,1,dif.w)))
+                        bool3 cmp = (cubeCorners[i].Pos> topPoint.xyz);
+                        if (cmp.x || cmp.y || cmp.z)
                         {
-                            //throw new Exception("Error:   " + dif);
+                            throw new Exception("Top point is not top: " + topPoint + "   " + i + "  " + cubeCorners[i]);
                         }
                     }
 
@@ -65,62 +93,117 @@ public static class MarchingCubes
                     // A value of 0 means cube is entirely inside surface; 255 entirely outside.
                     // The value is used to look up the edge table, which indicates which edges of the cube are cut by the isosurface.
                     int cubeIndex = 0;
-                    if (cubeCorners[0].w < chunk.isoSurfaceLevel) cubeIndex |= 1;
-                    if (cubeCorners[1].w < chunk.isoSurfaceLevel) cubeIndex |= 2;
-                    if (cubeCorners[2].w < chunk.isoSurfaceLevel) cubeIndex |= 4;
-                    if (cubeCorners[3].w < chunk.isoSurfaceLevel) cubeIndex |= 8;
-                    if (cubeCorners[4].w < chunk.isoSurfaceLevel) cubeIndex |= 16;
-                    if (cubeCorners[5].w < chunk.isoSurfaceLevel) cubeIndex |= 32;
-                    if (cubeCorners[6].w < chunk.isoSurfaceLevel) cubeIndex |= 64;
-                    if (cubeCorners[7].w < chunk.isoSurfaceLevel) cubeIndex |= 128;
+                    if (cubeCorners[0].Noise < chunk.isoSurfaceLevel) cubeIndex |= 1;
+                    if (cubeCorners[1].Noise < chunk.isoSurfaceLevel) cubeIndex |= 2;
+                    if (cubeCorners[2].Noise < chunk.isoSurfaceLevel) cubeIndex |= 4;
+                    if (cubeCorners[3].Noise < chunk.isoSurfaceLevel) cubeIndex |= 8;
+                    if (cubeCorners[4].Noise < chunk.isoSurfaceLevel) cubeIndex |= 16;
+                    if (cubeCorners[5].Noise < chunk.isoSurfaceLevel) cubeIndex |= 32;
+                    if (cubeCorners[6].Noise < chunk.isoSurfaceLevel) cubeIndex |= 64;
+                    if (cubeCorners[7].Noise < chunk.isoSurfaceLevel) cubeIndex |= 128;
 
                     // Create triangles for current cube configuration
-                    for (int i = 0; Table.Triangles[cubeIndex,i] != -1; i += 3)
+                    for (int i = 0; Table.Triangles[cubeIndex, i] != -1; i += 3)
                     {
                         // Get indices of corner points A and B for each of the three edges
                         // of the cube that need to be joined to form the triangle.
-                        int a0 = Table.CornerIndexAFromEdge[Table.Triangles[cubeIndex,i]];
-                        int b0 = Table.CornerIndexBFromEdge[Table.Triangles[cubeIndex,i]];
+                        int a0 = Table.CornerIndexAFromEdge[Table.Triangles[cubeIndex, i]];
+                        int b0 = Table.CornerIndexBFromEdge[Table.Triangles[cubeIndex, i]];
 
-                        int a1 = Table.CornerIndexAFromEdge[Table.Triangles[cubeIndex,i + 1]];
-                        int b1 = Table.CornerIndexBFromEdge[Table.Triangles[cubeIndex,i + 1]];
+                        int a1 = Table.CornerIndexAFromEdge[Table.Triangles[cubeIndex, i + 1]];
+                        int b1 = Table.CornerIndexBFromEdge[Table.Triangles[cubeIndex, i + 1]];
 
-                        int a2 = Table.CornerIndexAFromEdge[Table.Triangles[cubeIndex,i + 2]];
-                        int b2 = Table.CornerIndexBFromEdge[Table.Triangles[cubeIndex,i + 2]];
+                        int a2 = Table.CornerIndexAFromEdge[Table.Triangles[cubeIndex, i + 2]];
+                        int b2 = Table.CornerIndexBFromEdge[Table.Triangles[cubeIndex, i + 2]];
 
-                        float3 vertexA = interpolateVerts(chunk.isoSurfaceLevel, cubeCorners[a0], cubeCorners[b0]);
-                        float3 vertexB = interpolateVerts(chunk.isoSurfaceLevel, cubeCorners[a1], cubeCorners[b1]);
-                        float3 vertexC = interpolateVerts(chunk.isoSurfaceLevel, cubeCorners[a2], cubeCorners[b2]);
+                        VertexNormal vertexA = interpolateVerts(chunk.isoSurfaceLevel, cubeCorners[a0], cubeCorners[b0]);
+                        VertexNormal vertexB = interpolateVerts(chunk.isoSurfaceLevel, cubeCorners[a1], cubeCorners[b1]);
+                        VertexNormal vertexC = interpolateVerts(chunk.isoSurfaceLevel, cubeCorners[a2], cubeCorners[b2]);
 
-                        //Gizmos.color = Color.green;
-                        //Gizmos.DrawLine(vertexA, vertexB);
-                        //Gizmos.DrawLine(vertexB, vertexC);
-                        //Gizmos.DrawLine(vertexA, vertexC);
+                        // Triangle should be C - B - A
+                        //oldPoints.Clear();
                         int len = vertices.Count;
-                        vertices.Add(vertexA);
-                        vertices.Add(vertexB);
-                        vertices.Add(vertexC);
-                        triangles.Add(len+2);
-                        triangles.Add(len+1);
-                        triangles.Add(len);
+                        oldLayerPosIdDict.Clear();
+                        newLayerPosIdDict.Clear();
+
+                        int vertCId = GetVertId(vertices, oldLayerPosIdDict, newLayerPosIdDict, vertexC.position, topPoint, ref len);
+
+                        int vertBId = GetVertId(vertices, oldLayerPosIdDict, newLayerPosIdDict, vertexB.position, topPoint, ref len);
+
+                        int vertAId = GetVertId(vertices, oldLayerPosIdDict, newLayerPosIdDict, vertexA.position, topPoint, ref len);
+
+                        normals.Add(vertexC.normal);
+                        normals.Add(vertexB.normal);
+                        normals.Add(vertexA.normal);
+                        //vertices.Add(vertexA);
+                        //vertices.Add(vertexB);
+                        //vertices.Add(vertexC);
+
+                        triangles.Add(vertCId);
+                        triangles.Add(vertBId);
+                        triangles.Add(vertAId);
                     }
 
                 }
+            }
+            maxDictSize = math.max(maxDictSize, oldLayerPosIdDict.Count);
+        }
+
+        float timeAfterMesh = Time.realtimeSinceStartup * 1000;
+
+
+        Debug.Log("triangles: " + triangles.Count + " vertices: " + vertices.Count);
 
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
+        mesh.normals = normals.ToArray();
         //mesh.uv = uv.ToArray();
-        mesh.RecalculateNormals();
+        //mesh.RecalculateNormals();
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
-
+        float timeAfterGO = Time.realtimeSinceStartup * 1000;
+        Debug.Log("Time for noise: " + (timeAfterNoise - startTime) + " time for mesh: " + (timeAfterMesh - timeAfterNoise) + " GO: "+(timeAfterGO - timeAfterMesh));
+        Debug.Log("maxDictSize :  " + maxDictSize);
         return gameObject;
     }
 
-    private static float3 interpolateVerts(float isoLevel, float4 v1, float4 v2)
+    private static int GetVertId(List<Vector3> vertices, Dictionary<float3, int> oldLayerPosIdDict, Dictionary<float3, int> newLayerPosIdDict, float3 vertex, float3 topPoint, ref int len)
     {
-        float t = (isoLevel - v1.w) / (v2.w - v1.w);
-        return v1.xyz + t * (v2.xyz - v1.xyz);
+
+        int vertId;
+        if (oldLayerPosIdDict.TryGetValue(vertex, out vertId))
+        {
+            //vertId = positionIdDict.TryGetValue;
+        }
+        else
+        {
+            vertices.Add(vertex);
+            vertId = len;
+            if (math.any(vertex.xyz == topPoint))
+            {
+                oldLayerPosIdDict.Add(vertex, vertId);
+            }
+            if(vertex.z == topPoint.z)
+            {
+                newLayerPosIdDict.Add(vertex, vertId);
+            }
+            len++;
+        }
+
+        return vertId;
+    }
+
+    struct VertexNormal
+    {
+        public float3 position;
+        public float3 normal;
+    }
+
+    private static VertexNormal interpolateVerts(float isoLevel, NoiseVal v1, NoiseVal v2)
+    {
+        float t = (isoLevel - v1.Noise) / (v2.Noise - v1.Noise);
+        float3 normal = math.lerp(v1.Grad, v2.Grad, t);
+        return new VertexNormal { position = v1.Pos + t * (v2.Pos - v1.Pos), normal = -normal };
     }
 
     private static int GetIndex(int3 samples, int3 iter)
@@ -142,6 +225,7 @@ public struct SpawnChunkData : IComponentData
 
 public static class Table
 {
+    // max 5 triangles 
     public static int[,] Triangles =
         {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
