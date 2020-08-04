@@ -49,7 +49,10 @@ public class MarchingCubesTestEditor : Editor
         MarchingCubesTest tar = (MarchingCubesTest)target;
         if (GUILayout.Button("Generate"))
         {
-            for(int x=0; x<tar.count.x; x++)
+            GameObject oldMap = GameObject.Find("Map");
+            if (oldMap != null) DestroyImmediate(oldMap);
+            GameObject mapGO = new GameObject("Map");
+            for (int x=0; x<tar.count.x; x++)
             {
                 for(int y=0; y<tar.count.y; y++)
                 {
@@ -57,6 +60,7 @@ public class MarchingCubesTestEditor : Editor
                     {
                         GameObject gameObject = MarchingCubes.CreateChunkGameObject(new SpawnChunkData { minPoint = tar.size*new int3(x,y,z), size = tar.size, sampleCount = tar.sampleCount, noiseFactor = tar.noiseFactor, isoSurfaceLevel = tar.surfaceLevel });
                         gameObject.GetComponent<MeshRenderer>().material = tar.material;
+                        gameObject.transform.SetParent(mapGO.transform);
                     }
                 }
             }
