@@ -65,21 +65,28 @@
     <Compile Include="Assets\Scripts\Utils\PhysicUtils.cs" />
     <Compile Include="Assets\Scripts\UI\OptionsToggle.cs" />
     <Compile Include="Assets\Scripts\Utils\GizmosDrawer.cs" />
+    <Compile Include="Assets\Scripts\MarchingCubes\CreateMeshEntitySystem.cs" />
     <Compile Include="Assets\Scripts\Components\Boids\BoidComponent.cs" />
     <Compile Include="Assets\Scripts\Systems\RotateUpSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\Boid\SurroundingForcesSystem.cs" />
     <Compile Include="Assets\Scripts\Tests\SteerTowardsTest.cs" />
+    <Compile Include="Assets\Scripts\MarchingCubes\NoiseOrderComponent.cs" />
+    <Compile Include="Assets\Scripts\MarchingCubes\CreateMeshDataSystem.cs" />
+    <Compile Include="Assets\Scripts\MarchingCubes\AddBuffersSystem.cs" />
+    <Compile Include="Assets\Scripts\Utils\Noise.cs" />
+    <Compile Include="Assets\Scripts\MarchingCubes\MeshDataComponent.cs" />
+    <Compile Include="Assets\Scripts\MarchingCubes\CreateNoiseSystem.cs" />
     <Compile Include="Assets\Scripts\FPSCounter\FPSText.cs" />
+    <Compile Include="Assets\Scripts\MonoBehaviour\ChunkSpawnOrderer.cs" />
+    <Compile Include="Assets\Scripts\MarchingCubes\MarchingCubes.cs" />
     <Compile Include="Assets\Scripts\Systems\SpaceHashMap\Utils.cs" />
     <Compile Include="Assets\Scripts\Systems\SpaceHashMap\BoidHashMap.cs" />
+    <Compile Include="Assets\Scripts\Tests\MarchingCubesTest.cs" />
     <Compile Include="Assets\Scripts\Systems\PushByForceSystem.cs" />
     <Compile Include="Assets\Scripts\Components\Boids\BoidSpawnerComponent.cs" />
     <Compile Include="Assets\Scripts\Settings.cs" />
     <Compile Include="Assets\Scripts\Tests\Marker.cs" />
     <Compile Include="Assets\Scripts\Utils\Utils.cs" />
-    <Compile Include="Assets\Scripts\Tests\MarchingCubesTest.cs" />
-    <Compile Include="Assets\Scripts\Utils\Noise.cs" />
-    <Compile Include="Assets\Scripts\MarchingCubes\MarchingCubes.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

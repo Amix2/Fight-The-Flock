@@ -13,7 +13,7 @@ public class Settings : MonoBehaviour
     public void Awake()
     {
         Instance = this;
-        FixedRateUtils.EnableFixedRateWithCatchUp(World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>(), Time.fixedDeltaTime);
+        //FixedRateUtils.EnableFixedRateWithCatchUp(World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>(), Time.fixedDeltaTime);
     }
 
     private void Update()
